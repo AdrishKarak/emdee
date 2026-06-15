@@ -253,12 +253,25 @@ export default function NewVenturesPage() {
           </motion.div>
 
           {/* Horizontal Tiles Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15,
+                },
+              },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
+          >
             <InitiativeTile
               id="pre-seed"
               title="Pre-Seed Fund"
               content="We plan to back early stage, tech-first startups based in/out of East India, through equity/non-equity capital, office space, tech/IT enablement and mentorship. Please submit pitchdecks below:"
-              delay={0.1}
               buttonText="Submit Pitch Deck"
               buttonLink="https://forms.gle/QH1uTQk9ESwPMtYW7"
               className="order-2 md:order-1"
@@ -283,22 +296,33 @@ export default function NewVenturesPage() {
                   enterprise tech, digital transformations & AI solutions.
                 </>
               }
-              delay={0.2}
               className="order-1 md:order-2"
             />
             <InitiativeTile
               id="manufacturing"
               title="Manufacturing"
               content="We are venturing into manufacturing led capabilities. We are constructing a state-of-the-art manufacturing facility in Kalyani, West Bengal for producing global standard medical equipment (syringes, catheters, gloves and IV sets)."
-              delay={0.3}
               className="order-3"
             />
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
   );
 }
+
+const tileVariants = {
+  hidden: { opacity: 0, y: 35, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+};
 
 // Initiative Tile Component
 const InitiativeTile = ({
@@ -306,63 +330,15 @@ const InitiativeTile = ({
   title,
   titleLink,
   content,
-  delay,
   buttonText,
   buttonLink,
   className,
 }) => {
-  const ref = useRef(null);
-  const [animationProgress, setAnimationProgress] = useState(0);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
-
-  useEffect(() => {
-    const handleAnimation = () => {
-      if (!ref.current) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-
-      // Entry animation: starts when tile enters bottom 80% of viewport
-      const entryTriggerStart = viewportHeight * 0.8;
-      const entryTriggerEnd = viewportHeight * 0.35;
-
-      if (rect.top >= entryTriggerStart) {
-        setAnimationProgress(0);
-      } else if (rect.top > entryTriggerEnd) {
-        const progress =
-          1 -
-          (rect.top - entryTriggerEnd) / (entryTriggerStart - entryTriggerEnd);
-        setAnimationProgress(Math.min(1, Math.max(0, progress)));
-      } else {
-        setAnimationProgress(1);
-      }
-    };
-
-    window.addEventListener("scroll", handleAnimation, { passive: true });
-    handleAnimation(); // Check on mount
-
-    return () => window.removeEventListener("scroll", handleAnimation);
-  }, []);
-
-  const getAnimationStyle = () => {
-    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-    const easedProgress = easeOut(animationProgress);
-
-    return {
-      opacity: isInView ? 1 : 0,
-      transform: `translateY(${50 * (1 - easedProgress)}px) scale(${0.95 + 0.05 * easedProgress})`,
-      transition: "opacity 0.8s ease-out",
-    };
-  };
-
-  const animStyle = getAnimationStyle();
-
   return (
-    <div
+    <motion.div
       id={id}
-      ref={ref}
+      variants={tileVariants}
       className={`bg-white/[0.02] border border-white/5 backdrop-blur-md rounded-2xl p-6 md:p-8 hover:bg-white/[0.04] hover:border-[#FF6B35]/30 hover:shadow-[0_10px_35px_rgba(255,107,53,0.08)] transition-all duration-300 group flex flex-col justify-between min-h-[280px] ${className || ""}`}
-      style={animStyle}
     >
       <div>
         <h3 className="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-[#FF6B35] transition-colors duration-300 font-qanelas-soft">
@@ -393,6 +369,6 @@ const InitiativeTile = ({
           </a>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

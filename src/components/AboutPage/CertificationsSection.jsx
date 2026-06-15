@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { X, Eye } from "lucide-react";
+import { motion } from "motion/react";
 
 const certifications = [
   {
@@ -50,27 +51,30 @@ const certifications = [
 ];
 
 export function CertificationsSection() {
-  const [sectionVisible, setSectionVisible] = useState(false);
-  const [tilesVisible, setTilesVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const sectionRef = useRef(null);
-  const tilesRef = useRef(null);
 
-  useEffect(() => {
-    const observerOptions = { threshold: 0.1 };
-    const sectionObserver = new IntersectionObserver(([entry]) => {
-      setSectionVisible(entry.isIntersecting);
-    }, observerOptions);
-    const tilesObserver = new IntersectionObserver(([entry]) => {
-      setTilesVisible(entry.isIntersecting);
-    }, observerOptions);
-    if (sectionRef.current) sectionObserver.observe(sectionRef.current);
-    if (tilesRef.current) tilesObserver.observe(tilesRef.current);
-    return () => {
-      sectionObserver.disconnect();
-      tilesObserver.disconnect();
-    };
-  }, []);
+  // Stagger variants
+  const gridVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.75,
+        ease: [0.25, 0.1, 0.25, 1],
+      },
+    },
+  };
 
   return (
     <>
@@ -80,13 +84,12 @@ export function CertificationsSection() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           {/* Section header */}
-          <div
-            ref={sectionRef}
-            className="text-center mb-12 md:mb-20 transition-all duration-[1000ms] ease-out"
-            style={{
-              opacity: sectionVisible ? 1 : 0,
-              transform: sectionVisible ? "translateY(0)" : "translateY(20px)",
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-center mb-12 md:mb-20"
           >
             {/* Status Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
@@ -105,20 +108,20 @@ export function CertificationsSection() {
               <span className="font-semibold text-white">reliability</span>, and{" "}
               <span className="font-semibold text-white">integrity</span> — the three pillars of EMDEE's governance.
             </p>
-          </div>
+          </motion.div>
 
           {/* Grid Layout */}
-          <div
-            ref={tilesRef}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 transition-all duration-[1200ms] ease-out"
-            style={{
-              opacity: tilesVisible ? 1 : 0,
-              transform: tilesVisible ? "translateY(0)" : "translateY(30px)",
-            }}
+          <motion.div
+            variants={gridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8"
           >
             {certifications.map((cert, idx) => (
-              <div
+              <motion.div
                 key={idx}
+                variants={cardVariants}
                 className="relative flex flex-col sm:flex-row gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-xl hover:border-white/15 hover:bg-white/[0.04] transition-all duration-500 group overflow-hidden shadow-2xl"
               >
                 {/* Accent glow background on hover */}
@@ -181,9 +184,9 @@ export function CertificationsSection() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 

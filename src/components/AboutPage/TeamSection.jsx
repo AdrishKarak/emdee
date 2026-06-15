@@ -1,59 +1,7 @@
 import { Diamond, Star } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
 
 export function TeamSection() {
-  const [titleVisible, setTitleVisible] = useState(false);
-  const [row1Visible, setRow1Visible] = useState(false);
-  const [legendVisible, setLegendVisible] = useState(false);
-  const [row2Visible, setRow2Visible] = useState(false);
-  const [row3Visible, setRow3Visible] = useState(false);
-  const [row4Visible, setRow4Visible] = useState(false);
-  const [row5Visible, setRow5Visible] = useState(false);
-  const [row5MobileVisible, setRow5MobileVisible] = useState(false);
-  const [mobileGridVisible, setMobileGridVisible] = useState(false);
-
-  const titleRef = useRef(null);
-  const row1Ref = useRef(null);
-  const legendRef = useRef(null);
-  const row2Ref = useRef(null);
-  const row3Ref = useRef(null);
-  const row4Ref = useRef(null);
-  const row5Ref = useRef(null);
-  const row5MobileRef = useRef(null);
-  const mobileGridRef = useRef(null);
-
-  useEffect(() => {
-    const observerOptions = { threshold: 0.1 };
-
-    const createObserver = (ref, setVisible) => {
-      const observer = new IntersectionObserver(([entry]) => {
-        setVisible(entry.isIntersecting);
-      }, observerOptions);
-
-      if (ref.current) {
-        observer.observe(ref.current);
-      }
-
-      return observer;
-    };
-
-    const observers = [
-      createObserver(titleRef, setTitleVisible),
-      createObserver(row1Ref, setRow1Visible),
-      createObserver(legendRef, setLegendVisible),
-      createObserver(row2Ref, setRow2Visible),
-      createObserver(row3Ref, setRow3Visible),
-      createObserver(row4Ref, setRow4Visible),
-      createObserver(row5Ref, setRow5Visible),
-      createObserver(row5MobileRef, setRow5MobileVisible),
-      createObserver(mobileGridRef, setMobileGridVisible),
-    ];
-
-    return () => {
-      observers.forEach((observer) => observer.disconnect());
-    };
-  }, []);
-
   const row1 = [
     {
       name: "Malay Das",
@@ -216,6 +164,30 @@ export function TeamSection() {
     { name: "Assottom Ghosh", designation: "Assistant", badge: "golden-star" },
   ];
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 24, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.65,
+        ease: [0.25, 0.1, 0.25, 1],
+      },
+    },
+  };
+
   const ProfileCircle = ({
     name,
     designation,
@@ -247,7 +219,10 @@ export function TeamSection() {
     const badgeColor = badge ? badgeConfig[badge]?.color : null;
 
     return (
-      <div className="flex flex-col items-center gap-3 group cursor-pointer">
+      <motion.div 
+        variants={itemVariants}
+        className="flex flex-col items-center gap-3 group cursor-pointer"
+      >
         <div className="relative">
           <div
             className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-[#0B3D91]/20 to-[#FF6B35]/10 border border-white/10 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-[#FF6B35]/50 group-hover:shadow-[0_0_25px_rgba(255,107,53,0.2)]`}
@@ -293,7 +268,7 @@ export function TeamSection() {
             {designation}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -318,7 +293,7 @@ export function TeamSection() {
     const badgeColor = badge ? badgeConfig[badge]?.color : null;
 
     return (
-      <div className="text-center py-1">
+      <motion.div variants={itemVariants} className="text-center py-1">
         {BadgeIcon && (
           <div className="flex justify-center mb-1">
             <BadgeIcon
@@ -332,7 +307,7 @@ export function TeamSection() {
         <div className={`text-[#888888] ${designationSizeClasses[size]}`}>
           {designation}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -340,49 +315,52 @@ export function TeamSection() {
     <div className="w-full bg-transparent py-16 md:py-24 px-4 md:px-8 relative z-10">
       <div className="max-w-7xl mx-auto">
         {/* Subtitle Pill Badge */}
-        <div className="flex justify-center mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="flex justify-center mb-4"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B35] animate-pulse" />
             <span className="text-[10px] font-semibold tracking-[0.2em] text-white/70 uppercase">
               OUR PEOPLE
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Title */}
-        <h2
-          ref={titleRef}
-          className="text-3xl md:text-5xl font-bold text-white text-center mb-12 md:mb-16 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: titleVisible ? 1 : 0,
-            transform: titleVisible ? "translateY(0)" : "translateY(20px)",
-          }}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-3xl md:text-5xl font-bold text-white text-center mb-12 md:mb-16"
         >
           Our Team
-        </h2>
+        </motion.h2>
 
         {/* Row 1 - Desktop: 3 horizontal, Mobile: 3 vertical */}
-        <div
-          ref={row1Ref}
-          className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12 mb-12 md:mb-[2.52rem] transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: row1Visible ? 1 : 0,
-            transform: row1Visible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12 mb-12 md:mb-[2.52rem]"
         >
           {row1.map((profile, idx) => (
             <ProfileCircle key={idx} {...profile} />
           ))}
-        </div>
+        </motion.div>
 
         {/* Loyalty Badge Legend */}
-        <div
-          ref={legendRef}
-          className="max-w-3xl mx-auto mb-24 md:mb-[3.92rem] transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: legendVisible ? 1 : 0,
-            transform: legendVisible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="max-w-3xl mx-auto mb-24 md:mb-[3.92rem]"
         >
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2 bg-white/[0.02] border border-white/5 backdrop-blur-md rounded-lg shadow-md">
             <span className="text-[#FF6B35]/70 text-[10px] font-normal tracking-wide">
@@ -415,75 +393,73 @@ export function TeamSection() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile-only: combined 2x5 grid of row2 + row3 (10 people in pairs) */}
-        <div
-          ref={mobileGridRef}
-          className="grid grid-cols-2 md:hidden gap-8 mb-12 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: mobileGridVisible ? 1 : 0,
-            transform: mobileGridVisible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.05 }}
+          className="grid grid-cols-2 md:hidden gap-8 mb-12"
         >
           {[...row2, ...row3].map((profile, idx) => (
             <div key={idx} className="flex justify-center">
               <ProfileCircle {...profile} />
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Row 2 - Desktop only: 5 horizontal */}
-        <div
-          ref={row2Ref}
-          className="hidden md:flex md:flex-row md:justify-center md:items-start gap-8 md:gap-6 mb-12 md:mb-16 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: row2Visible ? 1 : 0,
-            transform: row2Visible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.08 }}
+          className="hidden md:flex md:flex-row md:justify-center md:items-start gap-8 md:gap-6 mb-12 md:mb-16"
         >
           {row2.map((profile, idx) => (
             <div key={idx} className="md:w-[184px] flex justify-center">
               <ProfileCircle {...profile} />
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Row 3 - Desktop only: 5 horizontal */}
-        <div
-          ref={row3Ref}
-          className="hidden md:flex md:flex-row md:justify-center md:items-start gap-8 md:gap-6 mb-12 md:mb-16 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: row3Visible ? 1 : 0,
-            transform: row3Visible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.08 }}
+          className="hidden md:flex md:flex-row md:justify-center md:items-start gap-8 md:gap-6 mb-12 md:mb-16"
         >
           {row3.map((profile, idx) => (
             <div key={idx} className="md:w-[184px] flex justify-center">
               <ProfileCircle {...profile} />
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Row 4 - Desktop: 8 horizontal, Mobile: thin vertical tiles without pictures */}
-        <div ref={row4Ref}>
-          <div
-            className="hidden md:flex md:flex-row md:justify-center md:items-center md:flex-wrap gap-6 md:gap-12 mb-12 md:mb-16 transition-all duration-[2000ms] ease-in-out"
-            style={{
-              opacity: row4Visible ? 1 : 0,
-              transform: row4Visible ? "translateY(0)" : "translateY(30px)",
-            }}
+        <div>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.08 }}
+            className="hidden md:flex md:flex-row md:justify-center md:items-center md:flex-wrap gap-6 md:gap-12 mb-12 md:mb-16"
           >
             {row4.map((profile, idx) => (
               <ProfileCircle key={idx} {...profile} size="small" />
             ))}
-          </div>
-          <div
-            className="flex flex-col md:hidden gap-2.5 mb-12 transition-all duration-[2000ms] ease-in-out"
-            style={{
-              opacity: row4Visible ? 1 : 0,
-              transform: row4Visible ? "translateY(0)" : "translateY(30px)",
-            }}
+          </motion.div>
+          
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.05 }}
+            className="flex flex-col md:hidden gap-2.5 mb-12"
           >
             {row4.map((profile, idx) => {
               const badgeConfig = {
@@ -499,8 +475,9 @@ export function TeamSection() {
                 : null;
 
               return (
-                <div
+                <motion.div
                   key={idx}
+                  variants={itemVariants}
                   className="bg-white/[0.02] border border-white/5 backdrop-blur-md rounded px-4 py-2.5 flex items-center justify-between hover:bg-white/[0.04] transition-all duration-300"
                 >
                   <div className="text-white text-sm font-medium flex-1">
@@ -516,13 +493,15 @@ export function TeamSection() {
                       fill={badgeColor}
                     />
                   )}
-                </div>
+                </motion.div>
               );
             })}
+            
             {/* Mobile only: Add row5Group1 as tiles */}
             {row5Group1.map((profile, idx) => (
-              <div
+              <motion.div
                 key={`row5g1-${idx}`}
+                variants={itemVariants}
                 className="bg-white/[0.02] border border-white/5 backdrop-blur-md rounded px-4 py-2.5 hover:bg-white/[0.04] transition-all duration-300"
               >
                 <div className="text-white text-sm font-medium">
@@ -531,19 +510,18 @@ export function TeamSection() {
                     {profile.designation}
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Mobile only: row5Group2 as 2x2 grid with simple list format */}
-        <div
-          ref={row5MobileRef}
-          className="grid grid-cols-2 md:hidden gap-x-6 gap-y-3 mb-12 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: row5MobileVisible ? 1 : 0,
-            transform: row5MobileVisible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="grid grid-cols-2 md:hidden gap-x-6 gap-y-3 mb-12"
         >
           {row5Group2.map((profile, idx) => {
             const badgeConfig = {
@@ -559,7 +537,11 @@ export function TeamSection() {
               : null;
 
             return (
-              <div key={idx} className="text-center">
+              <motion.div 
+                key={idx} 
+                variants={itemVariants}
+                className="text-center"
+              >
                 <div className="text-white text-xs font-medium flex items-center justify-center gap-1">
                   {profile.name}
                   {BadgeIcon && (
@@ -573,19 +555,18 @@ export function TeamSection() {
                 <div className="text-[#888888] text-[11px] mt-0.5">
                   {profile.designation}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Row 5 - Desktop: thin horizontal row with separator */}
-        <div
-          ref={row5Ref}
-          className="hidden md:flex md:flex-row md:justify-center md:items-center md:gap-8 transition-all duration-[2000ms] ease-in-out"
-          style={{
-            opacity: row5Visible ? 1 : 0,
-            transform: row5Visible ? "translateY(0)" : "translateY(30px)",
-          }}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="hidden md:flex md:flex-row md:justify-center md:items-center md:gap-8"
         >
           {row5Group1.map((profile, idx) => (
             <TextProfile key={idx} {...profile} />
@@ -594,15 +575,21 @@ export function TeamSection() {
           {row5Group2.map((profile, idx) => (
             <TextProfile key={idx} {...profile} size="small" />
           ))}
-        </div>
+        </motion.div>
 
         {/* Special Thanks Text */}
-        <div className="mt-16 md:mt-24 text-center px-4">
-          <p className="text-[#666666] text-[11.4px] md:text-sm italic opacity-50">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.5 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="mt-16 md:mt-24 text-center px-4"
+        >
+          <p className="text-[#666666] text-[11.4px] md:text-sm italic">
             A special thanks to Late Animesh Dey, Sri Samir Roy and Mr Nitish
             Kumar Das, for being EMDEE's earliest supporters and mentors
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

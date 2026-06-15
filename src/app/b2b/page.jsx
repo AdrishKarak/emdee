@@ -622,7 +622,13 @@ export default function B2BPage() {
         <ManifestoSection />
 
         {/* ── Closing section ── */}
-        <section className="max-w-[1400px] mx-auto px-6 lg:px-16 py-24 md:py-32 relative z-10">
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="max-w-[1400px] mx-auto px-6 lg:px-16 py-24 md:py-32 relative z-10"
+        >
           <div className="h-[1px] bg-gradient-to-r from-transparent via-[#4CAF50]/20 to-transparent mb-16 md:mb-20" />
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-14 md:gap-20 items-start">
             <div>
@@ -634,6 +640,7 @@ export default function B2BPage() {
                     background: "linear-gradient(90deg, #4CAF50, #81C784)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                   }}
                 >
                   Our job is to keep you on the right side of that equation.
@@ -707,7 +714,7 @@ export default function B2BPage() {
               </a>
             </div>
           </div>
-        </section>
+        </motion.section>
       </div>
     </div>
   );
